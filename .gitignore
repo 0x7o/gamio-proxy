@@ -1,27 +1,8 @@
-# Environment variables
-.env
+# SSL certificates
+certbot/
 
 # Logs
-logs/
 *.log
 
-# Docker
-.docker/
-
-# SSL certificates and certbot data
-certs/
-certbot/
-*.crt
-*.key
-*.pem
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
+# Environment
+.env
