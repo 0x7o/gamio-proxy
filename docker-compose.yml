@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  nginx-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gamio-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - POSTHOG_REGION=${POSTHOG_REGION:-us}
+    volumes:
+      # Логи для отладки
+      - ./logs:/var/log/nginx
+      # SSL сертификаты Let's Encrypt
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - proxy-network
+    depends_on:
+      - certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  certbot:
+    image: certbot/certbot
+    container_name: gamio-certbot
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - proxy-network
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+networks:
+  proxy-network:
+    driver: bridge

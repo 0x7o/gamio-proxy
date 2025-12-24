@@ -1,0 +1,27 @@
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Docker
+.docker/
+
+# SSL certificates and certbot data
+certs/
+certbot/
+*.crt
+*.key
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
